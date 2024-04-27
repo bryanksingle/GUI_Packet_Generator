@@ -1,0 +1,116 @@
+<html>
+   <head>
+	   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+	   <link rel="shortcut icon" type="image/x-icon" href="../image/favicon.png">
+	   <script src="https://cdn.tailwindcss.com"></script>
+
+       <script type="text/javascript" src="/eel.js"></script>
+	   <script type="text/javascript">
+			
+			window.onload =function run(){
+				document.getElementById("btn-submit").addEventListener("click",()=>{submit()});
+				document.getElementById("btn-close").addEventListener("click",()=>{document.getElementById("alertBox").hidden = true;});
+				
+				document.getElementById("textboxes").querySelectorAll("input").forEach(function(itemF){itemF.addEventListener("focus",function(){
+					parentF = itemF.parentElement
+					parentF.querySelector("label").innerHTML = parentF.id;
+					len =parentF.querySelector("label").getBoundingClientRect().width;
+					itemF.className = ("grow place-self-end -ml-["+len+"]");
+					itemF.placeholder="";	
+				});
+				});
+				document.getElementById("textboxes").querySelectorAll("input").forEach(function(itemB){itemB.addEventListener("blur",function(){
+					parentB = itemB.parentElement
+					itemB.className = ("grow place-self-center");
+					itemB.placeholder=parentB.id;
+					parentB.querySelector("label").innerHTML = "";
+				});
+				});
+			}
+
+			async function waitResponse(result, ipDST){
+
+				document.getElementById("popupText").innerHTML = "MAC address for " + ipDST + ":<br/><br/>" + result.replace(/\s+/g, "<br/>").replaceAll('+', " ");
+				document.getElementById("my_modal_3").showModal();
+				return;
+			
+			
+			}
+			
+			async function submit(){
+				ipDST = document.getElementById("ipText").value;
+				var toggle = document.getElementById("tog").checked;
+				var result = await eel.on_submit("arp",ipDST,toggle)();
+				
+				if(toggle){		
+					waitResponse(result, ipDST);
+				}else{
+					document.getElementById("alertText").innerHTML = result;
+					document.getElementById("alertBox").hidden = false;
+				
+				}
+				return;
+			}
+
+	   </script>
+   </head>
+
+   <body>
+
+		<div class="hero min-h-screen" style="background-image: url(../image/background.jpg);">
+		<div class="navbar bg-base-100 divider glass">
+			<a href="index.html"   class="btn btn-ghost text-xl"><img class = "h-6 w-6" src="../image/home.png"></a>
+			<div class="divider divider-horizontal"></div>
+			<a href="ip.html" class="btn btn-ghost text-xl">IP</a>
+			<div class="divider divider-horizontal"></div>
+			<a href="udp.html" class="btn btn-ghost text-xl">UDP</a>
+			<div class="divider divider-horizontal"></div>
+			<a href="tcp.html" class="btn btn-ghost text-xl">TCP</a>
+			<div class="divider divider-horizontal"></div>
+			<a href="dns.html" class="btn btn-ghost text-xl">DNS</a>
+			<div class="divider divider-horizontal"></div>
+			<a href="arp.html" class="btn btn-ghost text-xl">ARP</a>
+			<div class="divider divider-horizontal"></div>
+			<a href="icmp.html" class="btn btn-ghost text-xl">ICMP</a>
+		</div>
+
+		<div class="artboard-demo p-8 mt-24 mx-[max(40vw,12px)]">
+		<div id="textboxes">
+		<label id="IP Destination" class="input input-bordered flex w-96 m-1 items-center gap-2">
+			<label  class="place-self-start text-accent text-xs"></label>
+			<input  id = ipText type="text" placeholder="IP Destination" class="grow" />
+		</label>
+		</div>
+		<label class="label  w-96">
+		
+		<label class="label cursor-pointer gap-4">
+		<span class="label-text ">Get Response</span>
+		<input id = "tog" type="checkbox" class="toggle toggle-accent autocomplete="off"/>
+		</label>
+		
+		<button id="btn-submit" class="btn btn-accent flex mt-2 mr-1 p-3 place-self-end">Send</button>
+		</label>
+		</div>
+		
+		<div hidden id="alertBox" role="alert" class="alert place-self-end">
+		
+			<span id = "alertText"></span>
+			<button id = "btn-close" class="btn btn-xs btn-circle place-self-end">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+			</button>
+			
+		</div>
+		
+		</div>
+		<dialog id="my_modal_3" class="modal">
+			<div class="modal-box">
+				<form method="dialog">
+					<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+				</form>
+				<h3 id = "popupText" class="font-bold text-lg"></h3>
+				<p class="py-4">Press ESC key or click on ✕ button to close</p>
+			</div>
+		</dialog>
+		
+   </body>
+</html>
